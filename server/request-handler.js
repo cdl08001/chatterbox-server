@@ -52,26 +52,35 @@ var requestHandler = function(request, response) {
   var statusCode;
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
   
-  // Response to GET:
-  if (request.method === 'GET') {
-    statusCode = 200;
-    response.writeHead(statusCode, headers);
-    response.write(JSON.stringify({results: resultsArr}));
-    response.end();
-  }
 
-  //Response to POST
-  if (request.method === 'POST') {
-    statusCode = 201;
-    var arr = [];
-    request.on('data', (chunk) => {
-      arr.push(chunk);
-      var readable = Buffer.concat(arr).toString();
-      resultsArr.push(JSON.parse(readable));
-    });
-    
+  // If URL contains '/classes/messages', move forward:
+  if (request.url === '/classes/messages') {
+    // Response to GET:
+    if (request.method === 'GET') {
+      statusCode = 200;
+      response.writeHead(statusCode, headers);
+      response.write(JSON.stringify({results: resultsArr}));
+      response.end();
+    }
+
+    //Response to POST
+    if (request.method === 'POST') {
+      statusCode = 201;
+      var arr = [];
+      request.on('data', (chunk) => {
+        arr.push(chunk);
+        var readable = Buffer.concat(arr).toString();
+        resultsArr.push(JSON.parse(readable));
+      });
+      
+      response.writeHead(statusCode, headers);
+      response.write(JSON.stringify({results: resultsArr}));
+      response.end();
+    }
+  } else {
+  // Otherwise, generate a 404 error:
+    statusCode = 404;
     response.writeHead(statusCode, headers);
-    response.write(JSON.stringify({results: resultsArr}));
     response.end();
   }
 
