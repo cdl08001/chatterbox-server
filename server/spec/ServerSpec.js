@@ -116,4 +116,26 @@ describe('Node Server Request Listener Function', function() {
       });
   });
 
+  it('Should return a status code of 200 for OPTIONS requests', function() {
+    var req = new stubs.request('/classes/messages', 'OPTIONS');
+    var res = new stubs.response();
+    handler.requestHandler(req, res);
+    waitForThen(
+      function() { return res._ended; },
+      function() {
+        expect(res._responseCode).to.equal(200);
+      });
+  });
+
+  it('Should return a status code of 404 for TRACE requests', function() {
+    var req = new stubs.request('/classes/messages', 'TRACE');
+    var res = new stubs.response();
+    handler.requestHandler(req, res);
+    waitForThen(
+      function() { return res._ended; },
+      function() {
+        expect(res._responseCode).to.equal(404);
+      });
+  });
+
 });

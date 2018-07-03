@@ -54,7 +54,14 @@ var requestHandler = function(request, response) {
   
   
   // If URL contains '/classes/messages', move forward:
-  if (request.url === '/classes/messages') {
+  if (request.url.includes('/classes/messages')) {
+    // Response to OPTIONS:
+    if (request.method === 'OPTIONS') {
+      statusCode = 200;
+      response.writeHead(statusCode, headers);
+      response.end();
+    }
+
     // Response to GET:
     if (request.method === 'GET') {
       statusCode = 200;
@@ -83,7 +90,7 @@ var requestHandler = function(request, response) {
   }
 
 };
-exports.requestHandler = requestHandler;
+module.exports.requestHandler = requestHandler;
 
 
 
