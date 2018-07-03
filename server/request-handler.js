@@ -21,6 +21,22 @@ this file and include it in basic-server.js so that it actually works.
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
+// Request and Response come from node's http module.
+//
+// They include information about both the incoming request, such as
+// headers and URL, and about the outgoing response, such as its status
+// and content.
+// Documentation for both request and response can be found in the HTTP section at
+// http://nodejs.org/documentation/api/
+// Do some basic logging.
+// Adding more logging to your server can be an easy way to get passive
+// debugging help, but you should always be careful about leaving stray
+// console.logs in your code.
+// See the note below about CORS headers.
+// Tell the client we are sending them plain text.
+// You will need to change this if you are sending something
+// other than plain text, like JSON or HTML.
+var resultsArr = [];
 
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
@@ -30,33 +46,42 @@ var defaultCorsHeaders = {
 };
 
 var requestHandler = function(request, response) {
-  // Request and Response come from node's http module.
-  //
-  // They include information about both the incoming request, such as
-  // headers and URL, and about the outgoing response, such as its status
-  // and content.
-  var statusCode = 200;
-  // Documentation for both request and response can be found in the HTTP section at
-  // http://nodejs.org/documentation/api/
-  // Do some basic logging.
-  // Adding more logging to your server can be an easy way to get passive
-  // debugging help, but you should always be careful about leaving stray
-  // console.logs in your code.
+  
+  var headers = defaultCorsHeaders;
+  headers['Content-Type'] = 'text/plain';
+  var statusCode;
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
   
-  // See the note below about CORS headers.
-  var headers = defaultCorsHeaders;
-  // Tell the client we are sending them plain text.
-  // You will need to change this if you are sending something
-  // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'text/plain';
-     
+  // Response to GET:
+  if (request.method === 'GET') {
+    statusCode = 200;
+    response.writeHead(statusCode, headers);
+    response.write(JSON.stringify({results: resultsArr}));
+    response.end();
+  }
 
-  //Response:
-  // If 
-  response.writeHead(statusCode, headers);
-  response.write(JSON.stringify({results: []}));
-  response.end();
+  //Response to POST
+  if (request.method === 'POST') {
+    statusCode = 201;
+    var arr = [];
+    request.on('data', (chunk) => {
+      arr.push(chunk);
+      var readable = Buffer.concat(arr).toString();
+      resultsArr.push(JSON.parse(readable));
+    });
+    
+    response.writeHead(statusCode, headers);
+    response.write(JSON.stringify({results: resultsArr}));
+    response.end();
+  }
 
 };
 module.exports = requestHandler;
+
+
+
+
+
+
+
+
