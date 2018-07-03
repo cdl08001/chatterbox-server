@@ -36,7 +36,9 @@ this file and include it in basic-server.js so that it actually works.
 // Tell the client we are sending them plain text.
 // You will need to change this if you are sending something
 // other than plain text, like JSON or HTML.
-var resultsArr = [];
+var dummyDate = new Date('Tue Jul 03 2018 15:19:16 GMT-0700 (PDT)');
+var id = 2;
+var resultsArr = [{ username: 'Jono', text: 'Do my bidding!', objectID: 1, createdAt: dummyDate}];
 
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
@@ -76,7 +78,11 @@ var requestHandler = function(request, response) {
       request.on('data', (chunk) => {
         arr.push(chunk);
         var readable = Buffer.concat(arr).toString();
-        resultsArr.push(JSON.parse(readable));
+        var chatObj = JSON.parse(readable);
+        chatObj.objectId = id;
+        chatObj.createdAt = new Date();
+        id++;
+        resultsArr.push(chatObj);
       });
       
       response.writeHead(statusCode, headers);

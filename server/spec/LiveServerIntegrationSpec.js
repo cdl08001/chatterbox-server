@@ -72,5 +72,34 @@ describe('server', function() {
     });
   });
 
+  it('Should send a message object containing an ID property', function(done) {
+    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      var messages = JSON.parse(body).results;
+      expect(messages[0].objectID).to.equal(1);
+      done();
+    });
+  });
+
+  it('Should send a message object containing an createdAt property', function(done) {
+    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      var messages = JSON.parse(body).results;
+      expect(messages[0].createdAt).to.be.an('string');
+      done();
+    });
+  });
+
+  // it('should accept OPTIONS requests to /classes/messages', function(done) {
+  //   var requestParams = {method: 'OPTIONS',
+  //     uri: 'http://127.0.0.1:3000/classes/messages'};
+  //   expect(response.statusCode).to.equal(200);
+  //   done();
+  // });
+  it('should accept OPTIONS requests to /classes/messages', function(done) {
+    var requestParams = {method: 'OPTIONS', uri: 'http://127.0.0.1:3000/classes/messages'};
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
 
 });
