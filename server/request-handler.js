@@ -52,15 +52,14 @@ var requestHandler = function(request, response) {
   var statusCode;
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
   
-
+  
   // If URL contains '/classes/messages', move forward:
   if (request.url === '/classes/messages') {
     // Response to GET:
     if (request.method === 'GET') {
       statusCode = 200;
       response.writeHead(statusCode, headers);
-      response.write(JSON.stringify({results: resultsArr}));
-      response.end();
+      response.end(JSON.stringify({results: resultsArr}));
     }
 
     //Response to POST
@@ -74,8 +73,7 @@ var requestHandler = function(request, response) {
       });
       
       response.writeHead(statusCode, headers);
-      response.write(JSON.stringify({results: resultsArr}));
-      response.end();
+      response.end(JSON.stringify({results: resultsArr}));
     }
   } else {
   // Otherwise, generate a 404 error:
@@ -85,7 +83,8 @@ var requestHandler = function(request, response) {
   }
 
 };
-module.exports = requestHandler;
+exports.requestHandler = requestHandler;
+
 
 
 
